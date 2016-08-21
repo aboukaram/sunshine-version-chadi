@@ -1,9 +1,13 @@
 package com.example.android.sunshine.app;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -35,7 +39,34 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            Toast.makeText(this, "yahooo!!!", Toast.LENGTH_SHORT).show();
+
+            startActivity(new Intent(this, SettingsActivity.class));
+
             return true;
+        }
+
+        if (id == R.id.action_position_on_map)
+        {
+            Toast.makeText(this, "position !!!", Toast.LENGTH_SHORT).show();
+
+
+            String prefLocKey = getString(R.string.pref_location_key);
+            String prefLocDefault = getString(R.string.pref_location_default_value);
+
+            String postCode = PreferenceManager
+                    .getDefaultSharedPreferences(this)
+                    .getString(prefLocKey, prefLocDefault);
+
+
+            Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                    .appendQueryParameter("q", postCode)
+                    .build();
+
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+            mapIntent.setData(geoLocation);
+            startActivity(mapIntent);
         }
 
         return super.onOptionsItemSelected(item);

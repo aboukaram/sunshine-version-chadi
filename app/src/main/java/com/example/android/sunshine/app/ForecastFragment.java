@@ -1,9 +1,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +43,8 @@ public class ForecastFragment extends Fragment {
     protected ArrayAdapter<String> mForecastAdapter;
 
     static public final String INTENT_DATA_KEY = "PositionInList";
+    static public final String PREFS_NAME = "pref_general";
+
 
     public ForecastFragment() {
     }
@@ -58,15 +62,20 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_refresh) {
 
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("2988507");
+        if (id == R.id.action_refresh) {
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -74,8 +83,8 @@ public class ForecastFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
 
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
         String[] data = {
@@ -112,7 +121,6 @@ public class ForecastFragment extends Fragment {
 
                         CharSequence text = mForecastAdapter.getItem(position);
                         int duration = Toast.LENGTH_SHORT;
-
                         Toast toast = Toast.makeText(getActivity(), text, duration);
                         toast.show();
 
@@ -128,6 +136,30 @@ public class ForecastFragment extends Fragment {
 
         return rootView;
     }
+
+    public void updateWeather()
+    {
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        // Restore preferences
+        SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
+        //R.string.pref_location_key
+
+        String prefLocKey = getActivity().getString(R.string.pref_location_key);
+        String prefLocDefaultValue = getActivity().getString(R.string.pref_location_default_value);
+
+        String cityLocation = PreferenceManager
+                .getDefaultSharedPreferences(getActivity())
+                .getString(prefLocKey, prefLocDefaultValue);
+
+
+        // ( "pref_location_key", false);
+
+        Toast.makeText(getActivity(), cityLocation, Toast.LENGTH_SHORT).show();
+        weatherTask.execute(cityLocation);
+
+    }
+
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -214,6 +246,25 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
+
+                String prefUnitKey = getActivity().getString(R.string.pref_unit_key);
+                String prefUnitDefaultValue = getActivity().getString(R.string.metric);
+
+                String relevantUnit = PreferenceManager
+                        .getDefaultSharedPreferences(getActivity())
+                        .getString(prefUnitKey, prefUnitDefaultValue);
+
+                if (  relevantUnit.equals(getActivity().getString(R.string.metric)) )
+                {
+                    high = high;
+                    low = low;
+
+                }
+                else
+                {
+                    high = 32 + 9.0 / 5.0 * high;
+                    low = 32 + 9.0 / 5.0 * low;
+                }
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
@@ -249,7 +300,7 @@ public class ForecastFragment extends Fragment {
                 // http://openweathermap.org/API#forecast
 
                 final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String ID_PARAM = "id";
+                final String ID_PARAM = "zip";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
