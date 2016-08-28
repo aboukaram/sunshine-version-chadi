@@ -7,7 +7,7 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_settings">Titre de Settings Activity</string>
     <string name="settings_location_title">My Location</string>
-    <string name="pref_location_default_value">2988507</string>
+    <string name="pref_location_default_value">75001,fr</string>
     <string name="pref_location_key">pref_location_key</string>
 
     <string name="pref_unit_title">Les Unités</string>
