@@ -23,9 +23,9 @@ public class DetailActivityFragment extends Fragment {
         TextView m;
         m = (TextView)rootView.findViewById(R.id.textView);
 
-        String retour = getActivity().getIntent().getExtras().getString(Intent.EXTRA_TEXT);
+        String intentExtraText = getActivity().getIntent().getExtras().getString(Intent.EXTRA_TEXT);
 
-        m.setText(retour);
+        m.setText(intentExtraText);
 
         return rootView;
 
