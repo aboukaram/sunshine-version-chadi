@@ -15,6 +15,7 @@
  */
 package com.example.android.sunshine.app.data;
 
+import android.net.Uri;
 import android.test.AndroidTestCase;
 
 /*
