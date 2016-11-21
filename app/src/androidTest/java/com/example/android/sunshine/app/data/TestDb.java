@@ -21,8 +21,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class TestDb extends AndroidTestCase {
 
@@ -131,26 +129,9 @@ public class TestDb extends AndroidTestCase {
         return testValues;
     }
 
-    static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
-
-        validateCurrentRecord(error, valueCursor, expectedValues);
-        valueCursor.close();
-    }
-
-    static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
-        Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
-        for (Map.Entry<String, Object> entry : valueSet) {
-            String columnName = entry.getKey();
-            int idx = valueCursor.getColumnIndex(columnName);
-            assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
-            String expectedValue = entry.getValue().toString();
-            assertEquals("Value '" + entry.getValue().toString() +
-                    "' did not match the expected value '" +
-                    expectedValue + "'. " + error, expectedValue, valueCursor.getString(idx));
-        }
-    }
 
     public void testLocationTable() {
+
         // First step: Get reference to writable database
         WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -184,7 +165,7 @@ public class TestDb extends AndroidTestCase {
         // Validate data in resulting Cursor with the original ContentValues
         // (you can use the validateCurrentRecord function in TestUtilities to validate the
         // query if you like)
-        TestUtilities.validateCursor("Error: location Query Validation Failed",c,locationValues);
+        TestUtilities.validateCurrentRecord("Error: location Query Validation Failed",c,locationValues);
 
         // Finally, close the cursor and database
         c.close();
@@ -234,6 +215,8 @@ public class TestDb extends AndroidTestCase {
         );
 
         // Move the cursor to a valid database row
+        // Je soupçonne cette instruction d'être incorrecte.
+        // il faudrait aller vers le last.
         weatherCursor.moveToFirst();
 
         // Validate data in resulting Cursor with the original ContentValues
