@@ -463,7 +463,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     protected void onPostExecute(String[] result) {
         if (result != null && mForecastAdapter != null) {
             mForecastAdapter.clear();
-            for(String dayForecastStr : result) {
+            for(String dayForecastStr : result)
+            {
                 mForecastAdapter.add(dayForecastStr);
             }
             // New data is back from the server.  Hooray!
