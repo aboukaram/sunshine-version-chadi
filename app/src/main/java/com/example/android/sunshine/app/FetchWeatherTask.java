@@ -277,7 +277,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         String city_id = params[0];
         String format = "json";
         String units = "metric";
-        int numDays = 14;
+        int numDays = 5;
         String api_key = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
 
         try {
@@ -285,11 +285,11 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
             final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-            final String ID_PARAM = "zip";
+            final String ID_PARAM = "q";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
-            final String APIKEY_PARAM = "APPID";
+            final String APIKEY_PARAM = "appid";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                     .appendQueryParameter(ID_PARAM, city_id)
@@ -331,7 +331,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             forecastJsonStr = buffer.toString();
             getWeatherDataFromJson(forecastJsonStr, locationQuery);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            Log.e(LOG_TAG, e.getMessage(), e);
             /*
             If the code didn't successfully get the weather data, there's no point in attemping
             to parse it.
