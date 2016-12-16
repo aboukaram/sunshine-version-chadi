@@ -278,6 +278,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         String format = "json";
         String units = "metric";
         int numDays = 5;
+
         String api_key = BuildConfig.OPEN_WEATHER_MAP_API_KEY;
 
         try {

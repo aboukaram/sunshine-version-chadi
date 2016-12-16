@@ -1,15 +1,14 @@
 package com.example.android.sunshine.app;
 
 import android.content.SharedPreferences;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,42 +20,17 @@ import android.widget.Toast;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 
-import static android.widget.CursorAdapter.FLAG_AUTO_REQUERY;
-
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
+{
 
+    private static final int FORECAST_LOADER = 0;
     private ForecastAdapter mForecastAdapter;
 
     static public final String INTENT_DATA_KEY = "PositionInList";
     static public final String PREFS_NAME = "pref_general";
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            // if changes occurred in either of the watched Uris updateSettings()
-            // updateSettings() is a normal void method that will be called to handle all changes
-            // or you could just do your work here but presumable the same work will need to be done
-            // on load of your class as well... but you get the picture
-
-            String locationSetting = Utility.getPreferredLocation(getActivity());
-
-            // Sort order:  Ascending, by date.
-            String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-            Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
-            Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri, null, null, null, sortOrder);
-
-            Log.i("blablaaaaa", "mmmmmm", null);
-            mForecastAdapter.swapCursor(cur);
-
-        }
-    }
 
 
     public ForecastFragment() {
@@ -87,7 +61,8 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_refresh) {
+        if (id == R.id.action_refresh)
+        {
             updateWeather();
             return true;
         }
@@ -99,22 +74,8 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
 
-        String locationSetting = Utility.getPreferredLocation(getActivity());
-
-        // Sort order:  Ascending, by date.
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-                locationSetting, System.currentTimeMillis());
-
-        Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri, null, null, null, sortOrder);
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        cur.registerContentObserver(observer);
-
         // The CursorAdapter will take data from our cursor and populate the ListView
-        // However, we cannot use FLAG_AUTO_REQUERY since it is deprecated, so we will end
-        // up with an empty list the first time we run.
-        mForecastAdapter = new ForecastAdapter(getActivity(), cur, 0);
-
+        mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -140,12 +101,18 @@ public class ForecastFragment extends Fragment {
                 }
         );*/
 
-
-
         return rootView;
     }
 
-    public void updateWeather()
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+
+    public void updateWeather() // elle synchronize seulement la base locale.
     {
 
         //FetchWeatherTask weatherTask = new FetchWeatherTask();
@@ -163,10 +130,44 @@ public class ForecastFragment extends Fragment {
 
 
         // ( "pref_location_key", false);
-
         Toast.makeText(getActivity(), cityLocation, Toast.LENGTH_SHORT).show();
+
         weatherTask.execute(cityLocation);
 
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+
+        // Sort order:  Ascending, by date.
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        Loader<Cursor> chiLoader = new CursorLoader(
+                getActivity(),
+                weatherForLocationUri,
+                null,null,null, sortOrder);
+
+        return chiLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mForecastAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mForecastAdapter.swapCursor(null);
+    }
+
+    // since we read the location when we create the loader, all we need to do is restart things
+    public void onLocationChanged( ) {
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
 
 // Ici les méthodes du loaderListner.
