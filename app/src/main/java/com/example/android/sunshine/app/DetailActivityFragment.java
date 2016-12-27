@@ -141,7 +141,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         String low = Utility.formatTemperature(
                 data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
-        mForecast = String.format("ICI : %s - %s - %s/%s", dateString, weatherDescription, high, low);
+        mForecast = String.format("Avant wireframe : %s - %s - %s/%s", dateString, weatherDescription, high, low);
 
         TextView detailTextView = (TextView)getView().findViewById(R.id.textView);
         detailTextView.setText(mForecast);
