@@ -127,11 +127,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Log.v(LOG_TAG, "In onLoadFinished");
         if (!data.moveToFirst()) { return; }
 
-        String dateString = Utility.formatDate(
-                data.getLong(COL_WEATHER_DATE));
+        String dateString = Utility.formatDate(data.getLong(COL_WEATHER_DATE));
 
-        String weatherDescription =
-                data.getString(COL_WEATHER_DESC);
+        String weatherDescription = data.getString(COL_WEATHER_DESC);
 
         boolean isMetric = Utility.isMetric(getActivity());
 
@@ -145,9 +143,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         detailTextView.setText(mForecast);
 
         // If onCreateOptionsMenu has already happened, we need to update the share intent now.
-        if (mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(createShareForecastIntent());
-        }
+        if (mShareActionProvider != null) mShareActionProvider.setShareIntent(createShareForecastIntent());
+
     }
 
     @Override
