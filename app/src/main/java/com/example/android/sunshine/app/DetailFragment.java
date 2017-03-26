@@ -36,22 +36,31 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int DETAIL_LOADER = 0;
 
-    private static final String[] FORECAST_COLUMNS =
-            {
+    private static final String[] FORECAST_COLUMNS = {
             WeatherEntry.TABLE_NAME + "." + WeatherEntry._ID,
             WeatherEntry.COLUMN_DATE,
+            WeatherEntry.COLUMN_WEATHER_ID,
             WeatherEntry.COLUMN_SHORT_DESC,
             WeatherEntry.COLUMN_MAX_TEMP,
             WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherEntry.COLUMN_HUMIDITY,
+            WeatherEntry.COLUMN_PRESSURE,
+            WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherEntry.COLUMN_DEGREES
     };
 
     // these constants correspond to the projection defined above, and must change if the
     // projection changes
     private static final int COL_WEATHER_ID = 0;
     private static final int COL_WEATHER_DATE = 1;
-    private static final int COL_WEATHER_DESC = 2;
-    private static final int COL_WEATHER_MAX_TEMP = 3;
-    private static final int COL_WEATHER_MIN_TEMP = 4;
+    private static final int COL_WEATHER_WEATHER_ID = 2;
+    private static final int COL_WEATHER_DESC = 3;
+    private static final int COL_WEATHER_MAX_TEMP = 4;
+    private static final int COL_WEATHER_MIN_TEMP = 5;
+    private static final int COL_WEATHER_HUMIDITY = 6;
+    private static final int COL_WEATHER_PRESSURE = 7;
+    private static final int COL_WEATHER_WIND_SPEED = 8;
+    private static final int COL_WEATHER_DEGREES =9;
 
 
 
@@ -129,6 +138,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Log.v(LOG_TAG, "In onLoadFinished");
         if (!data.moveToFirst()) { return; }
 
+ /*       private static final int COL_WEATHER_ID = 0;
+        private static final int COL_WEATHER_DATE = 1;
+        private static final int COL_WEATHER_WEATHER_ID = 2;
+        private static final int COL_WEATHER_DESC = 3;
+        private static final int COL_WEATHER_MAX_TEMP = 4;
+        private static final int COL_WEATHER_MIN_TEMP = 5;
+        private static final int COL_WEATHER_HUMIDITY = 6;
+        private static final int COL_WEATHER_PRESSURE = 7;
+        private static final int COL_WEATHER_WIND_SPEED = 8;
+        private static final int COL_WEATHER_DEGREES =9;
+*/
+
         String dateString = Utility.formatDate(data.getLong(COL_WEATHER_DATE));
 
         String weatherDescription = data.getString(COL_WEATHER_DESC);
@@ -139,7 +160,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         String low = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
-        mForecast = String.format("Avant wireframe : %s - %s - %s/%s", dateString, weatherDescription, high, low);
+        double humidity = data.getDouble(COL_WEATHER_HUMIDITY);
+        double pressure = data.getDouble(COL_WEATHER_PRESSURE);
+        double windSpeed = data.getDouble(COL_WEATHER_WIND_SPEED);
+        double degrees = data.getDouble(COL_WEATHER_DEGREES);
+
+        mForecast = String.format("Avant wireframe : %s - %s - %s/%s - %f - %f - %f - %f",
+                dateString, weatherDescription, high, low, humidity, pressure, windSpeed, degrees);
 
         TextView detailTextView = (TextView)getView().findViewById(R.id.textView);
         detailTextView.setText(mForecast);
