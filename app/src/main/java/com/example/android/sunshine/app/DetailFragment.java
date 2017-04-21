@@ -26,8 +26,6 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
-
-
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
@@ -138,7 +136,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.v(LOG_TAG, "In onCreateLoader");
         Intent intent = getActivity().getIntent();
-        if (intent == null) {
+
+        if (intent == null || intent.getData() == null) {
             return null;
         }
 
@@ -158,19 +157,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.v(LOG_TAG, "In onLoadFinished");
         if (!data.moveToFirst()) { return; }
-
- /*       private static final int COL_WEATHER_ID = 0;
-        private static final int COL_WEATHER_DATE = 1;
-        private static final int COL_WEATHER_WEATHER_ID = 2;
-        private static final int COL_WEATHER_DESC = 3;
-        private static final int COL_WEATHER_MAX_TEMP = 4;
-        private static final int COL_WEATHER_MIN_TEMP = 5;
-        private static final int COL_WEATHER_HUMIDITY = 6;
-        private static final int COL_WEATHER_PRESSURE = 7;
-        private static final int COL_WEATHER_WIND_SPEED = 8;
-        private static final int COL_WEATHER_DEGREES =9;
-*/
-
 
         // Read weather condition ID from cursor
         int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
