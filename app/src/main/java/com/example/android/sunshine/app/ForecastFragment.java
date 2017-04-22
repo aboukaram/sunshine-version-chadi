@@ -1,6 +1,5 @@
 package com.example.android.sunshine.app;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,6 +26,13 @@ import com.example.android.sunshine.app.data.WeatherContract;
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
+
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
+    }
 
     // For the forecast view we're showing only a small subset of the stored data.
     // Specify the columns we need.
@@ -129,16 +135,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-                if (cursor != null) {
+
+                if (cursor != null)
+                {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
 
                     Uri targetUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                             locationSetting, cursor.getLong(COL_WEATHER_DATE)
                     );
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(targetUri);
 
-                    startActivity(intent);
+                    ((Callback) getActivity()).onItemSelected(targetUri);
                 }
             }
         });
@@ -216,9 +222,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
 // Ici les méthodes du loaderListner.
-
-
-
 
 
 
