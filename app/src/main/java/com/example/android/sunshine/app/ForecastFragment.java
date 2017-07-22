@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android.sunshine.app.data.WeatherContract;
+import com.example.android.sunshine.app.services.SunshineService;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
@@ -173,16 +174,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
 
-
+    // 1. récupérer la location.
+    // 2. lancer l'asynctask.
     public void updateWeather() // elle synchronize seulement la base locale.
     {
-
-        //FetchWeatherTask weatherTask = new FetchWeatherTask();
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         // Restore preferences
         SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
         //R.string.pref_location_key
-
         String prefLocKey = getActivity().getString(R.string.pref_location_key);
         String prefLocDefaultValue = getActivity().getString(R.string.pref_location_default_value);
 
@@ -190,11 +188,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 .getDefaultSharedPreferences(getActivity())
                 .getString(prefLocKey, prefLocDefaultValue);
 
-
         // ( "pref_location_key", false);
         Toast.makeText(getActivity(), cityLocation, Toast.LENGTH_SHORT).show();
 
+        //FetchWeatherTask weatherTask = new FetchWeatherTask();
+        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         weatherTask.execute(cityLocation);
+
+        SunshineService.startActionFoo(this.getActivity(),"bennn", "binnggg");
 
     }
 
