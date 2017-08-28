@@ -1,10 +1,8 @@
 package com.example.android.sunshine.app;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.services.SunshineService;
@@ -178,6 +175,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     // 2. lancer l'asynctask.
     public void updateWeather() // elle synchronize seulement la base locale.
     {
+        /*
         // Restore preferences
         SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
         //R.string.pref_location_key
@@ -194,6 +192,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         //FetchWeatherTask weatherTask = new FetchWeatherTask();
         FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         weatherTask.execute(cityLocation);
+        */
 
         SunshineService.startActionFoo(this.getActivity(),"bennn", "binnggg");
 
